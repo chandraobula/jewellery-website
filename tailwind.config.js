@@ -13,11 +13,11 @@ export default {
       },
       colors: {
         brand: {
-          primary: "#C5A572",        /* Soft Gold */
-          secondary: "#E6C9A8",      /* Champagne */
-          accent: "#D79F7E",         /* Rose Gold */
-          dark: "#1A1A1A",           /* Deep Onyx */
-          light: "#FAF7F2",          /* Ivory */
+          primary: "#6366F1",        /* Indigo */
+          secondary: "#8B5CF6",      /* Purple */
+          accent: "#EC4899",         /* Pink */
+          dark: "#1F2937",           /* Dark Gray */
+          light: "#F9FAFB",          /* Light Gray */
         },
         neutral: {
           50: "#FCFAF8",
@@ -29,10 +29,11 @@ export default {
           700: "#4A433D",
           900: "#1F1A17",
         },
-        jewel: {
-          emerald: "#0B8A6F",
-          sapphire: "#264B8E",
-          ruby: "#9B2C38",
+        fashion: {
+          indigo: "#6366F1",
+          purple: "#8B5CF6",
+          pink: "#EC4899",
+          teal: "#14B8A6",
         },
         status: {
           success: "#3B8C76",
@@ -41,10 +42,10 @@ export default {
         }
       },
       backgroundImage: {
-        'gradient-gold-soft': 'linear-gradient(135deg, #E6D3B4 0%, #C5A572 100%)',
-        'gradient-rose-gold': 'linear-gradient(135deg, #F4D2C4 0%, #D79F7E 100%)',
-        'gradient-luxury-dark': 'linear-gradient(135deg, #1A1A1A 0%, #4A433D 100%)',
-        'gradient-light-blur': 'linear-gradient(180deg, rgba(255,255,255,0.7) 0%, rgba(250,247,242,1) 100%)',
+        'gradient-fashion': 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)',
+        'gradient-fashion-pink': 'linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%)',
+        'gradient-fashion-dark': 'linear-gradient(135deg, #1F2937 0%, #374151 100%)',
+        'gradient-light-blur': 'linear-gradient(180deg, rgba(255,255,255,0.7) 0%, rgba(249,250,251,1) 100%)',
       },
       spacing: {
         'xxs': '2px',
@@ -57,6 +58,14 @@ export default {
         '3xl': '64px',
         '4xl': '96px',
       },
+      screens: {
+        'xs': '475px',
+        'sm': '640px',
+        'md': '768px',
+        'lg': '1024px',
+        'xl': '1280px',
+        '2xl': '1536px',
+      },
       borderRadius: {
         'sm': '4px',
         'md': '8px',
@@ -68,7 +77,7 @@ export default {
         'soft': '0 4px 12px rgba(0, 0, 0, 0.05)',
         'medium': '0 6px 20px rgba(0, 0, 0, 0.08)',
         'strong': '0 10px 30px rgba(0, 0, 0, 0.12)',
-        'glow-gold': '0 0 15px rgba(197,165,114,0.35)',
+        'glow-fashion': '0 0 15px rgba(99,102,241,0.35)',
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-out forwards',

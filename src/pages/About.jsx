@@ -30,16 +30,16 @@ const About = () => {
             <span className="text-sm font-accent font-bold tracking-widest uppercase text-brand-primary mb-3 block">The Beginning</span>
             <h2 className="text-h2 mb-6 text-brand-dark">Born from a Passion for <span className="italic font-light text-brand-accent">Beauty</span></h2>
             <p className="text-brand-dark/70 leading-relaxed mb-6">
-              Lumière was founded in 2010 with a simple yet ambitious vision: to create jewellery that transcends trends and becomes a part of your personal legacy. We believe that true luxury lies in the details—the way a diamond catches the light, the weight of gold against your skin, the feeling of wearing something truly unique.
+              FashionHub was founded with a simple yet ambitious vision: to create fashion that transcends trends and becomes a part of your personal style. We believe that true style lies in the details—the perfect fit, quality fabrics, and designs that make you feel confident and comfortable.
             </p>
             <p className="text-brand-dark/70 leading-relaxed">
-              Our journey began in a small atelier in Paris, where our master craftsmen poured their hearts into every piece. Today, we continue that tradition of excellence, blending old-world techniques with modern design to create collections that are both timeless and contemporary.
+              Our journey began with a passion for bringing you the latest fashion trends at accessible prices. Today, we continue that tradition of excellence, curating collections from trusted manufacturers to create a wardrobe that is both timeless and contemporary.
             </p>
           </div>
           <div className="md:w-1/2">
             <img 
               src="https://images.unsplash.com/photo-1531995811006-35cb42e1a022?q=80&w=2070&auto=format&fit=crop" 
-              alt="Jewellery Sketch" 
+              alt="Fashion Design" 
               className="w-full h-auto rounded-sm shadow-lg"
             />
           </div>
@@ -54,21 +54,21 @@ const About = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             <div className="text-center">
-              <h3 className="text-xl font-primary font-bold mb-4">Ethical Sourcing</h3>
+              <h3 className="text-xl font-primary font-bold mb-4">Quality Materials</h3>
               <p className="text-brand-dark/70 leading-relaxed">
-                We are committed to responsible sourcing. All our diamonds are conflict-free, and we use recycled gold whenever possible to minimize our environmental impact.
+                We are committed to using quality fabrics and materials. All our products are made from premium materials that ensure comfort, durability, and style.
               </p>
             </div>
             <div className="text-center">
-              <h3 className="text-xl font-primary font-bold mb-4">Artisanal Craftsmanship</h3>
+              <h3 className="text-xl font-primary font-bold mb-4">Expert Curation</h3>
               <p className="text-brand-dark/70 leading-relaxed">
-                Every piece is hand-finished by skilled artisans who have dedicated their lives to the art of jewellery making. We refuse to compromise on quality.
+                Every piece is carefully selected by our fashion experts who understand style and quality. We refuse to compromise on the fit, fabric, or finish of our products.
               </p>
             </div>
             <div className="text-center">
               <h3 className="text-xl font-primary font-bold mb-4">Transparent Pricing</h3>
               <p className="text-brand-dark/70 leading-relaxed">
-                By selling directly to you, we eliminate the middleman markup. You get the highest quality jewellery at a fair price, without the traditional retail premium.
+                By selling directly to you, we eliminate the middleman markup. You get the highest quality fashion at a fair price, without the traditional retail premium.
               </p>
             </div>
           </div>

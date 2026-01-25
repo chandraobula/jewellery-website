@@ -1,22 +1,25 @@
 import { Link } from 'react-router-dom';
 import { Trash2, ShoppingBag } from 'lucide-react';
 import Button from '../components/ui/Button';
+import { formatPrice } from '../utils/price';
 
 const Wishlist = () => {
   // Mock wishlist data
   const wishlistItems = [
     {
       id: 2,
-      name: 'Rose Gold Pendant',
-      price: 850.00,
-      image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?q=80&w=2070&auto=format&fit=crop',
+      name: 'Classic White T-Shirt',
+      price: 599,
+      discountedPrice: 449,
+      image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=2080&auto=format&fit=crop',
       inStock: true
     },
     {
       id: 4,
-      name: 'Gold Chain Bracelet',
-      price: 620.00,
-      image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=2070&auto=format&fit=crop',
+      name: 'Slim Fit Jeans',
+      price: 1999,
+      discountedPrice: 1499,
+      image: 'https://images.unsplash.com/photo-1542272604-787c3835535d?q=80&w=2070&auto=format&fit=crop',
       inStock: false
     }
   ];
@@ -53,7 +56,16 @@ const Wishlist = () => {
                       {item.name}
                     </Link>
                   </h3>
-                  <p className="font-medium mb-4">${item.price.toFixed(2)}</p>
+                  <div className="font-medium mb-4">
+                    {item.discountedPrice ? (
+                      <>
+                        <span className="line-through text-sm text-brand-dark/50 mr-2">{formatPrice(item.price)}</span>
+                        <span>{formatPrice(item.discountedPrice)}</span>
+                      </>
+                    ) : (
+                      formatPrice(item.price)
+                    )}
+                  </div>
                   
                   <Button 
                     variant="secondary" 

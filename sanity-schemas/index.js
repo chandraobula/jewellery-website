@@ -1,6 +1,123 @@
-// Sanity Schema Definitions for JewelCraft
+// Sanity Schema Definitions for Fashion E-Commerce
 // Add these to your Sanity Studio schemas folder
 
+// Color variant schema
+export const colorVariantSchema = {
+  name: 'colorVariant',
+  title: 'Color Variant',
+  type: 'object',
+  fields: [
+    {
+      name: 'name',
+      title: 'Color Name',
+      type: 'string',
+      validation: Rule => Rule.required()
+    },
+    {
+      name: 'hex',
+      title: 'Hex Code',
+      type: 'string',
+      description: 'e.g., #FF5733',
+      validation: Rule => Rule.regex(/^#[0-9A-F]{6}$/i).error('Must be a valid hex color code')
+    },
+    {
+      name: 'image',
+      title: 'Color Swatch Image',
+      type: 'image',
+      options: {
+        hotspot: true
+      }
+    }
+  ]
+};
+
+// Size variant schema
+export const sizeVariantSchema = {
+  name: 'sizeVariant',
+  title: 'Size Variant',
+  type: 'object',
+  fields: [
+    {
+      name: 'size',
+      title: 'Size',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'XS', value: 'XS' },
+          { title: 'S', value: 'S' },
+          { title: 'M', value: 'M' },
+          { title: 'L', value: 'L' },
+          { title: 'XL', value: 'XL' },
+          { title: 'XXL', value: 'XXL' },
+          { title: '28', value: '28' },
+          { title: '30', value: '30' },
+          { title: '32', value: '32' },
+          { title: '34', value: '34' },
+          { title: '36', value: '36' },
+          { title: '38', value: '38' },
+          { title: '40', value: '40' },
+          { title: '42', value: '42' },
+          { title: 'One Size', value: 'One Size' }
+        ]
+      },
+      validation: Rule => Rule.required()
+    },
+    {
+      name: 'stock',
+      title: 'Stock Quantity',
+      type: 'number',
+      validation: Rule => Rule.required().min(0)
+    },
+    {
+      name: 'sku',
+      title: 'SKU',
+      type: 'string',
+      description: 'Stock Keeping Unit for this size'
+    }
+  ]
+};
+
+// Product variant (size + color combination)
+export const productVariantSchema = {
+  name: 'productVariant',
+  title: 'Product Variant',
+  type: 'object',
+  fields: [
+    {
+      name: 'color',
+      title: 'Color',
+      type: 'colorVariant',
+      validation: Rule => Rule.required()
+    },
+    {
+      name: 'sizes',
+      title: 'Available Sizes',
+      type: 'array',
+      of: [{ type: 'sizeVariant' }],
+      validation: Rule => Rule.required().min(1)
+    },
+    {
+      name: 'images',
+      title: 'Variant Images',
+      type: 'array',
+      of: [{
+        type: 'image',
+        options: {
+          hotspot: true
+        }
+      }],
+      description: 'Images specific to this color variant'
+    },
+    {
+      name: 'sku',
+      title: 'Base SKU',
+      type: 'string',
+      description: 'Base SKU for this color variant (size SKUs will be appended)'
+    }
+  ]
+};
+
+// Main Product Schema
 export const productSchema = {
   name: 'product',
   title: 'Product',
@@ -23,17 +140,37 @@ export const productSchema = {
       validation: Rule => Rule.required()
     },
     {
+      name: 'brand',
+      title: 'Brand',
+      type: 'string',
+      validation: Rule => Rule.required()
+    },
+    {
       name: 'price',
       title: 'Price (USD)',
       type: 'number',
       validation: Rule => Rule.required().min(0)
     },
     {
-      name: 'originalPrice',
-      title: 'Original Price (USD)',
+      name: 'discountedPrice',
+      title: 'Discounted Price (USD)',
       type: 'number',
-      description: 'Leave empty if not on sale',
+      description: 'Sale price if product is on discount',
       validation: Rule => Rule.min(0)
+    },
+    {
+      name: 'currency',
+      title: 'Currency',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'USD', value: 'USD' },
+          { title: 'EUR', value: 'EUR' },
+          { title: 'GBP', value: 'GBP' },
+          { title: 'INR', value: 'INR' }
+        ]
+      },
+      initialValue: 'USD'
     },
     {
       name: 'category',
@@ -48,69 +185,62 @@ export const productSchema = {
       type: 'string',
       options: {
         list: [
-          { title: 'Engagement Rings', value: 'engagement-rings' },
-          { title: 'Wedding Bands', value: 'wedding-bands' },
-          { title: 'Fashion Rings', value: 'fashion-rings' },
-          { title: 'Pendants', value: 'pendants' },
-          { title: 'Chains', value: 'chains' },
-          { title: 'Stud Earrings', value: 'stud-earrings' },
-          { title: 'Drop Earrings', value: 'drop-earrings' },
-          { title: 'Hoop Earrings', value: 'hoop-earrings' },
-          { title: 'Bangle Bracelets', value: 'bangle-bracelets' },
-          { title: 'Chain Bracelets', value: 'chain-bracelets' },
-          { title: 'Charm Bracelets', value: 'charm-bracelets' },
-          { title: 'Luxury Watches', value: 'luxury-watches' },
-          { title: 'Smart Watches', value: 'smart-watches' },
-          { title: 'Jewelry Sets', value: 'jewelry-sets' }
+          // Tops
+          { title: 'T-Shirt', value: 't-shirt' },
+          { title: 'Shirt', value: 'shirt' },
+          { title: 'Blouse', value: 'blouse' },
+          { title: 'Tank Top', value: 'tank-top' },
+          { title: 'Hoodie', value: 'hoodie' },
+          { title: 'Sweater', value: 'sweater' },
+          { title: 'Jacket', value: 'jacket' },
+          { title: 'Blazer', value: 'blazer' },
+          { title: 'Coat', value: 'coat' },
+          // Bottoms
+          { title: 'Jeans', value: 'jeans' },
+          { title: 'Trousers', value: 'trousers' },
+          { title: 'Shorts', value: 'shorts' },
+          { title: 'Skirt', value: 'skirt' },
+          { title: 'Leggings', value: 'leggings' },
+          // Dresses & Traditional
+          { title: 'Dress', value: 'dress' },
+          { title: 'Kurti', value: 'kurti' },
+          { title: 'Saree', value: 'saree' },
+          { title: 'Lehenga', value: 'lehenga' },
+          { title: 'Salwar Suit', value: 'salwar-suit' },
+          // Accessories
+          { title: 'Scarf', value: 'scarf' },
+          { title: 'Hat', value: 'hat' },
+          { title: 'Belt', value: 'belt' },
+          { title: 'Bag', value: 'bag' },
+          // Footwear
+          { title: 'Shoes', value: 'shoes' },
+          { title: 'Sneakers', value: 'sneakers' },
+          { title: 'Sandals', value: 'sandals' },
+          { title: 'Boots', value: 'boots' }
         ]
       }
     },
     {
-      name: 'material',
-      title: 'Material',
+      name: 'gender',
+      title: 'Gender',
       type: 'string',
       options: {
         list: [
-          { title: 'Gold', value: 'Gold' },
-          { title: 'Silver', value: 'Silver' },
-          { title: 'Platinum', value: 'Platinum' },
-          { title: 'Rose Gold', value: 'Rose Gold' },
-          { title: 'White Gold', value: 'White Gold' },
-          { title: 'Stainless Steel', value: 'Stainless Steel' }
+          { title: 'Men', value: 'men' },
+          { title: 'Women', value: 'women' },
+          { title: 'Kids', value: 'kids' },
+          { title: 'Unisex', value: 'unisex' }
         ]
       },
       validation: Rule => Rule.required()
     },
     {
-      name: 'gemstone',
-      title: 'Gemstone',
-      type: 'string',
-      options: {
-        list: [
-          { title: 'Diamond', value: 'Diamond' },
-          { title: 'Ruby', value: 'Ruby' },
-          { title: 'Sapphire', value: 'Sapphire' },
-          { title: 'Emerald', value: 'Emerald' },
-          { title: 'Pearl', value: 'Pearl' },
-          { title: 'Amethyst', value: 'Amethyst' },
-          { title: 'Topaz', value: 'Topaz' },
-          { title: 'Garnet', value: 'Garnet' },
-          { title: 'Opal', value: 'Opal' },
-          { title: 'None', value: 'None' }
-        ]
-      }
-    },
-    {
-      name: 'weight',
-      title: 'Weight',
-      type: 'string',
-      description: 'e.g., 2.5g, 5.2g'
-    },
-    {
-      name: 'size',
-      title: 'Size',
-      type: 'string',
-      description: 'e.g., 6.5, 7, 8, One Size'
+      name: 'variants',
+      title: 'Product Variants',
+      type: 'array',
+      of: [{ type: 'productVariant' }],
+      description: 'Color and size combinations',
+      validation: Rule => Rule.required().min(1)
     },
     {
       name: 'images',
@@ -122,24 +252,183 @@ export const productSchema = {
           hotspot: true
         }
       }],
+      description: 'Main product images (will be used if variant images not available)',
       validation: Rule => Rule.required().min(1).max(10)
     },
     {
       name: 'description',
       title: 'Description',
-      type: 'text',
-      validation: Rule => Rule.required().min(50).max(500)
+      type: 'array',
+      of: [
+        {
+          type: 'block'
+        },
+        {
+          type: 'image',
+          options: {
+            hotspot: true
+          }
+        }
+      ],
+      validation: Rule => Rule.required()
+    },
+    // Fashion-Specific Fields
+    {
+      name: 'fabric',
+      title: 'Fabric/Material',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Cotton', value: 'cotton' },
+          { title: 'Polyester', value: 'polyester' },
+          { title: 'Silk', value: 'silk' },
+          { title: 'Wool', value: 'wool' },
+          { title: 'Linen', value: 'linen' },
+          { title: 'Denim', value: 'denim' },
+          { title: 'Leather', value: 'leather' },
+          { title: 'Rayon', value: 'rayon' },
+          { title: 'Viscose', value: 'viscose' },
+          { title: 'Chiffon', value: 'chiffon' },
+          { title: 'Georgette', value: 'georgette' },
+          { title: 'Crepe', value: 'crepe' },
+          { title: 'Blend', value: 'blend' }
+        ]
+      }
     },
     {
-      name: 'features',
-      title: 'Key Features',
+      name: 'fit',
+      title: 'Fit',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Slim', value: 'slim' },
+          { title: 'Regular', value: 'regular' },
+          { title: 'Oversized', value: 'oversized' },
+          { title: 'Relaxed', value: 'relaxed' },
+          { title: 'Loose', value: 'loose' },
+          { title: 'Fitted', value: 'fitted' }
+        ]
+      }
+    },
+    {
+      name: 'sleeveType',
+      title: 'Sleeve Type',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Full Sleeve', value: 'full-sleeve' },
+          { title: 'Half Sleeve', value: 'half-sleeve' },
+          { title: 'Sleeveless', value: 'sleeveless' },
+          { title: 'Three Quarter', value: 'three-quarter' },
+          { title: 'Cap Sleeve', value: 'cap-sleeve' }
+        ]
+      }
+    },
+    {
+      name: 'necklineType',
+      title: 'Neckline Type',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Round', value: 'round' },
+          { title: 'V-Neck', value: 'v-neck' },
+          { title: 'Collar', value: 'collar' },
+          { title: 'Hood', value: 'hood' },
+          { title: 'High Neck', value: 'high-neck' },
+          { title: 'Off Shoulder', value: 'off-shoulder' },
+          { title: 'Boat Neck', value: 'boat-neck' }
+        ]
+      }
+    },
+    {
+      name: 'length',
+      title: 'Length',
+      type: 'string',
+      description: 'e.g., Knee Length, Ankle Length, Full Length'
+    },
+    {
+      name: 'pattern',
+      title: 'Pattern',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Solid', value: 'solid' },
+          { title: 'Printed', value: 'printed' },
+          { title: 'Striped', value: 'striped' },
+          { title: 'Polka Dot', value: 'polka-dot' },
+          { title: 'Floral', value: 'floral' },
+          { title: 'Geometric', value: 'geometric' },
+          { title: 'Abstract', value: 'abstract' },
+          { title: 'Embroidered', value: 'embroidered' }
+        ]
+      }
+    },
+    {
+      name: 'occasion',
+      title: 'Occasion',
       type: 'array',
       of: [{ type: 'string' }],
-      description: 'Key features and benefits of the product'
+      options: {
+        list: [
+          { title: 'Casual', value: 'casual' },
+          { title: 'Formal', value: 'formal' },
+          { title: 'Party', value: 'party' },
+          { title: 'Festive', value: 'festive' },
+          { title: 'Wedding', value: 'wedding' },
+          { title: 'Office', value: 'office' },
+          { title: 'Sports', value: 'sports' },
+          { title: 'Beach', value: 'beach' }
+        ]
+      }
     },
     {
+      name: 'season',
+      title: 'Season',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Summer', value: 'summer' },
+          { title: 'Winter', value: 'winter' },
+          { title: 'Spring', value: 'spring' },
+          { title: 'Fall/Autumn', value: 'fall' },
+          { title: 'All Season', value: 'all-season' }
+        ]
+      }
+    },
+    {
+      name: 'careInstructions',
+      title: 'Care Instructions',
+      type: 'text',
+      description: 'Washing and care instructions'
+    },
+    {
+      name: 'countryOfOrigin',
+      title: 'Country of Origin',
+      type: 'string'
+    },
+    {
+      name: 'modelInfo',
+      title: 'Model Information',
+      type: 'object',
+      fields: [
+        {
+          name: 'height',
+          title: 'Model Height',
+          type: 'string',
+          description: 'e.g., 5\'8"'
+        },
+        {
+          name: 'wearingSize',
+          title: 'Size Model is Wearing',
+          type: 'string',
+          description: 'e.g., M, L'
+        }
+      ]
+    },
+    // Flags
+    {
       name: 'isNew',
-      title: 'New Product',
+      title: 'New Arrival',
       type: 'boolean',
       initialValue: false
     },
@@ -154,12 +443,6 @@ export const productSchema = {
       title: 'On Sale',
       type: 'boolean',
       initialValue: false
-    },
-    {
-      name: 'stock',
-      title: 'Stock Quantity',
-      type: 'number',
-      validation: Rule => Rule.required().min(0)
     },
     {
       name: 'tags',
@@ -182,6 +465,7 @@ export const productSchema = {
       type: 'number',
       validation: Rule => Rule.min(0)
     },
+    // SEO
     {
       name: 'seoTitle',
       title: 'SEO Title',
@@ -204,6 +488,7 @@ export const productSchema = {
   }
 };
 
+// Category Schema (updated for fashion)
 export const categorySchema = {
   name: 'category',
   title: 'Category',
@@ -240,6 +525,19 @@ export const categorySchema = {
       }
     },
     {
+      name: 'gender',
+      title: 'Gender',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Men', value: 'men' },
+          { title: 'Women', value: 'women' },
+          { title: 'Kids', value: 'kids' },
+          { title: 'Unisex', value: 'unisex' }
+        ]
+      }
+    },
+    {
       name: 'featured',
       title: 'Featured Category',
       type: 'boolean',
@@ -255,9 +553,188 @@ export const categorySchema = {
   preview: {
     select: {
       title: 'title',
-      media: 'image'
+      media: 'image',
+      subtitle: 'gender'
     }
   }
+};
+
+// Collection Schema (for seasonal/trending collections)
+export const collectionSchema = {
+  name: 'collection',
+  title: 'Collection',
+  type: 'document',
+  fields: [
+    {
+      name: 'title',
+      title: 'Collection Title',
+      type: 'string',
+      validation: Rule => Rule.required()
+    },
+    {
+      name: 'slug',
+      title: 'Slug',
+      type: 'slug',
+      options: {
+        source: 'title',
+        maxLength: 96,
+      },
+      validation: Rule => Rule.required()
+    },
+    {
+      name: 'description',
+      title: 'Description',
+      type: 'text'
+    },
+    {
+      name: 'image',
+      title: 'Collection Banner Image',
+      type: 'image',
+      options: {
+        hotspot: true
+      }
+    },
+    {
+      name: 'type',
+      title: 'Collection Type',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Seasonal', value: 'seasonal' },
+          { title: 'Trending', value: 'trending' },
+          { title: 'Festive', value: 'festive' },
+          { title: 'New Arrivals', value: 'new-arrivals' },
+          { title: 'Sale', value: 'sale' },
+          { title: 'Custom', value: 'custom' }
+        ]
+      }
+    },
+    {
+      name: 'products',
+      title: 'Products',
+      type: 'array',
+      of: [{ type: 'reference', to: { type: 'product' } }]
+    },
+    {
+      name: 'startDate',
+      title: 'Start Date',
+      type: 'date',
+      description: 'When this collection becomes active'
+    },
+    {
+      name: 'endDate',
+      title: 'End Date',
+      type: 'date',
+      description: 'When this collection expires'
+    },
+    {
+      name: 'featured',
+      title: 'Featured Collection',
+      type: 'boolean',
+      initialValue: false
+    }
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      media: 'image',
+      subtitle: 'type'
+    }
+  }
+};
+
+// Size Guide Schema
+export const sizeGuideSchema = {
+  name: 'sizeGuide',
+  title: 'Size Guide',
+  type: 'document',
+  fields: [
+    {
+      name: 'title',
+      title: 'Size Guide Title',
+      type: 'string',
+      validation: Rule => Rule.required()
+    },
+    {
+      name: 'category',
+      title: 'Category',
+      type: 'reference',
+      to: { type: 'category' }
+    },
+    {
+      name: 'gender',
+      title: 'Gender',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Men', value: 'men' },
+          { title: 'Women', value: 'women' },
+          { title: 'Kids', value: 'kids' },
+          { title: 'Unisex', value: 'unisex' }
+        ]
+      }
+    },
+    {
+      name: 'measurements',
+      title: 'Size Measurements',
+      type: 'array',
+      of: [{
+        type: 'object',
+        fields: [
+          {
+            name: 'size',
+            title: 'Size',
+            type: 'string'
+          },
+          {
+            name: 'chest',
+            title: 'Chest (inches)',
+            type: 'number'
+          },
+          {
+            name: 'waist',
+            title: 'Waist (inches)',
+            type: 'number'
+          },
+          {
+            name: 'hips',
+            title: 'Hips (inches)',
+            type: 'number'
+          },
+          {
+            name: 'length',
+            title: 'Length (inches)',
+            type: 'number'
+          }
+        ]
+      }]
+    },
+    {
+      name: 'internationalSizes',
+      title: 'International Size Mapping',
+      type: 'object',
+      fields: [
+        {
+          name: 'us',
+          title: 'US Sizes',
+          type: 'array',
+          of: [{ type: 'string' }]
+        },
+        {
+          name: 'uk',
+          title: 'UK Sizes',
+          type: 'array',
+          of: [{ type: 'string' }]
+        },
+        {
+          name: 'eu',
+          title: 'EU Sizes',
+          type: 'array',
+          of: [{ type: 'string' }]
+        }
+      ]
+    }
+  ]
 };
 
 export const testimonialSchema = {
@@ -295,6 +772,41 @@ export const testimonialSchema = {
       title: 'Testimonial Text',
       type: 'text',
       validation: Rule => Rule.required().min(50)
+    },
+    {
+      name: 'product',
+      title: 'Product Reviewed',
+      type: 'reference',
+      to: { type: 'product' }
+    },
+    {
+      name: 'sizeFeedback',
+      title: 'Size Feedback',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Runs Small', value: 'runs-small' },
+          { title: 'True to Size', value: 'true-to-size' },
+          { title: 'Runs Large', value: 'runs-large' }
+        ]
+      }
+    },
+    {
+      name: 'fitRating',
+      title: 'Fit Rating',
+      type: 'number',
+      validation: Rule => Rule.min(1).max(5)
+    },
+    {
+      name: 'customerPhotos',
+      title: 'Customer Photos',
+      type: 'array',
+      of: [{
+        type: 'image',
+        options: {
+          hotspot: true
+        }
+      }]
     },
     {
       name: 'isFeatured',

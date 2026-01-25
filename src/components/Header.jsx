@@ -32,11 +32,11 @@ const Header = () => {
   }, []);
 
   const navigation = [
-    { name: 'Home', href: '/' },
-    { name: 'Products', href: '/products' },
-    { name: 'Categories', href: '/categories' },
-    { name: 'About', href: '/about' },
-    { name: 'Contact', href: '/contact' },
+    { name: 'Men', href: '/men' },
+    { name: 'Women', href: '/women' },
+    { name: 'Kids', href: '/kids' },
+    { name: 'New Arrivals', href: '/new-arrivals' },
+    { name: 'Sale', href: '/sale' },
   ];
 
   const handleSearch = (e) => {
@@ -63,11 +63,11 @@ const Header = () => {
             to="/" 
             className="flex items-center space-x-2 group"
           >
-            <div className="w-10 h-10 bg-jewellery-gradient rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-xl">J</span>
+            <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-full flex items-center justify-center">
+              <span className="text-white font-bold text-xl">F</span>
             </div>
             <span className="font-elegant text-2xl font-semibold gradient-text">
-              JewelCraft
+              FashionHub
             </span>
           </Link>
 
@@ -79,13 +79,13 @@ const Header = () => {
                 to={item.href}
                 className={`relative font-medium transition-colors duration-300 ${
                   location.pathname === item.href
-                    ? 'text-gold-600'
-                    : 'text-gray-700 hover:text-gold-600'
+                    ? 'text-indigo-600'
+                    : 'text-gray-700 hover:text-indigo-600'
                 }`}
               >
                 {item.name}
                 {location.pathname === item.href && (
-                  <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gold-500 rounded-full"></span>
+                  <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-indigo-500 rounded-full"></span>
                 )}
               </Link>
             ))}
@@ -97,7 +97,7 @@ const Header = () => {
             <div className="relative">
               <button
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="p-2 text-gray-700 hover:text-gold-600 transition-colors duration-300"
+                className="p-2 text-gray-700 hover:text-indigo-600 transition-colors duration-300"
               >
                 <Search className="w-5 h-5" />
               </button>
@@ -110,8 +110,8 @@ const Header = () => {
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Search jewellery..."
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-transparent"
+                      placeholder="Search fashion..."
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                       autoFocus
                     />
                     <button
@@ -133,7 +133,7 @@ const Header = () => {
             {/* Cart */}
             <button className="p-2 text-gray-700 hover:text-gold-600 transition-colors duration-300 relative">
               <ShoppingBag className="w-5 h-5" />
-              <span className="absolute -top-1 -right-1 bg-gold-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 bg-indigo-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                 0
               </span>
             </button>
@@ -164,8 +164,8 @@ const Header = () => {
                   onClick={() => setIsMenuOpen(false)}
                   className={`block px-4 py-2 font-medium transition-colors duration-300 ${
                     location.pathname === item.href
-                      ? 'text-gold-600 bg-gold-50'
-                      : 'text-gray-700 hover:text-gold-600 hover:bg-gold-50'
+                      ? 'text-indigo-600 bg-indigo-50'
+                      : 'text-gray-700 hover:text-indigo-600 hover:bg-indigo-50'
                   }`}
                 >
                   {item.name}

@@ -8,9 +8,9 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           {/* Brand Column */}
           <div className="space-y-6">
-            <h3 className="text-2xl font-primary font-bold text-brand-dark">LUMIÈRE</h3>
+            <h3 className="text-2xl font-primary font-bold text-brand-dark">FashionHub</h3>
             <p className="text-brand-dark/80 leading-relaxed">
-              Crafting timeless elegance for the modern muse. Our pieces are designed to celebrate your unique journey with sustainable luxury.
+              Discover the latest trends in fashion. From casual wear to formal attire, we bring you curated collections for every style and occasion.
             </p>
             <div className="flex space-x-4">
               <a href="#" className="w-10 h-10 rounded-full border border-brand-dark/20 flex items-center justify-center hover:bg-brand-primary hover:border-brand-primary hover:text-white transition-all duration-300">
@@ -32,12 +32,12 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-primary font-bold mb-6">Shop</h4>
             <ul className="space-y-4">
+              <li><Link to="/men" className="text-brand-dark/70 hover:text-brand-primary transition-colors">Men</Link></li>
+              <li><Link to="/women" className="text-brand-dark/70 hover:text-brand-primary transition-colors">Women</Link></li>
+              <li><Link to="/kids" className="text-brand-dark/70 hover:text-brand-primary transition-colors">Kids</Link></li>
               <li><Link to="/new-arrivals" className="text-brand-dark/70 hover:text-brand-primary transition-colors">New Arrivals</Link></li>
-              <li><Link to="/best-sellers" className="text-brand-dark/70 hover:text-brand-primary transition-colors">Best Sellers</Link></li>
-              <li><Link to="/rings" className="text-brand-dark/70 hover:text-brand-primary transition-colors">Rings</Link></li>
-              <li><Link to="/necklaces" className="text-brand-dark/70 hover:text-brand-primary transition-colors">Necklaces</Link></li>
-              <li><Link to="/earrings" className="text-brand-dark/70 hover:text-brand-primary transition-colors">Earrings</Link></li>
-              <li><Link to="/gifts" className="text-brand-dark/70 hover:text-brand-primary transition-colors">Gifts</Link></li>
+              <li><Link to="/sale" className="text-brand-dark/70 hover:text-brand-primary transition-colors">Sale</Link></li>
+              <li><Link to="/collections" className="text-brand-dark/70 hover:text-brand-primary transition-colors">Collections</Link></li>
             </ul>
           </div>
 
@@ -48,8 +48,9 @@ const Footer = () => {
               <li><Link to="/contact" className="text-brand-dark/70 hover:text-brand-primary transition-colors">Contact Us</Link></li>
               <li><Link to="/shipping" className="text-brand-dark/70 hover:text-brand-primary transition-colors">Shipping & Returns</Link></li>
               <li><Link to="/faq" className="text-brand-dark/70 hover:text-brand-primary transition-colors">FAQ</Link></li>
-              <li><Link to="/care-guide" className="text-brand-dark/70 hover:text-brand-primary transition-colors">Jewellery Care</Link></li>
+              <li><Link to="/fabric-care" className="text-brand-dark/70 hover:text-brand-primary transition-colors">Fabric Care</Link></li>
               <li><Link to="/size-guide" className="text-brand-dark/70 hover:text-brand-primary transition-colors">Size Guide</Link></li>
+              <li><Link to="/returns-exchanges" className="text-brand-dark/70 hover:text-brand-primary transition-colors">Returns & Exchanges</Link></li>
             </ul>
           </div>
 
@@ -75,7 +76,7 @@ const Footer = () => {
 
         <div className="border-t border-brand-secondary/20 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-brand-dark/50">
-            © {new Date().getFullYear()} Lumière Jewellery. All rights reserved.
+            © {new Date().getFullYear()} FashionHub. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm text-brand-dark/50">
             <Link to="/privacy" className="hover:text-brand-primary transition-colors">Privacy Policy</Link>

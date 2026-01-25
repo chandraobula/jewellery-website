@@ -1,7 +1,54 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronUp, X } from 'lucide-react';
+import { getBrands, getColors, getSizes } from '../lib/sanity';
 
-const FilterSection = ({ title, options, isOpen, onToggle }) => {
+const FilterSection = ({ title, options, isOpen, onToggle, type = 'checkbox', filterKey, selectedValues = [], onValueChange }) => {
+  const isSingleSelect = filterKey === 'price' || filterKey === 'discount';
+  
+  const handleChange = (value, checked) => {
+    if (onValueChange) {
+      if (isSingleSelect) {
+        // For single select (price, discount), replace the selection
+        if (checked) {
+          onValueChange(filterKey, [value]);
+        } else {
+          onValueChange(filterKey, []);
+        }
+      } else {
+        // For multi-select, add/remove from array
+        if (checked) {
+          onValueChange(filterKey, [...selectedValues, value]);
+        } else {
+          onValueChange(filterKey, selectedValues.filter(v => {
+            // Handle array comparison for price ranges
+            if (Array.isArray(v) && Array.isArray(value)) {
+              return v[0] !== value[0] || v[1] !== value[1];
+            }
+            return v !== value;
+          }));
+        }
+      }
+    }
+  };
+  
+  const isValueSelected = (optionValue) => {
+    if (isSingleSelect) {
+      if (Array.isArray(optionValue) && Array.isArray(selectedValues[0])) {
+        return selectedValues.length > 0 && 
+               selectedValues[0][0] === optionValue[0] && 
+               selectedValues[0][1] === optionValue[1];
+      }
+      return selectedValues.includes(optionValue);
+    }
+    if (Array.isArray(optionValue)) {
+      return selectedValues.some(sv => 
+        Array.isArray(sv) && sv[0] === optionValue[0] && sv[1] === optionValue[1]
+      );
+    }
+    return selectedValues.includes(optionValue);
+  };
+
   return (
     <div className="border-b border-neutral-200 py-4">
       <button 
@@ -14,68 +61,219 @@ const FilterSection = ({ title, options, isOpen, onToggle }) => {
       
       {isOpen && (
         <div className="space-y-2 mt-2 animate-fade-in">
-          {options.map((option) => (
-            <label key={option.id} className="flex items-center gap-3 cursor-pointer group">
-              <div className="relative flex items-center">
-                <input 
-                  type="checkbox" 
-                  className="peer h-4 w-4 border-brand-dark/30 rounded-sm text-brand-primary focus:ring-brand-primary/50 transition-all"
-                />
-              </div>
-              <span className="text-sm text-brand-dark/70 group-hover:text-brand-dark transition-colors">
-                {option.label} <span className="text-xs text-neutral-400">({option.count})</span>
-              </span>
-            </label>
-          ))}
+          {options.map((option) => {
+            const optionValue = typeof option === 'string' ? option : (option.value || option.id || option.name || option.label);
+            const isChecked = selectedValues.includes(optionValue);
+            
+            return (
+              <label key={option.id || option.value || (typeof option === 'string' ? option : option.name || option.label)} className="flex items-center gap-3 cursor-pointer group">
+                {type === 'checkbox' || type === 'radio' ? (
+                  <>
+                    <input 
+                      type={isSingleSelect ? 'radio' : 'checkbox'}
+                      name={isSingleSelect ? filterKey : undefined}
+                      checked={isChecked}
+                      onChange={(e) => handleChange(optionValue, e.target.checked)}
+                      className="peer h-4 w-4 border-brand-dark/30 rounded-sm text-brand-primary focus:ring-brand-primary/50 transition-all"
+                    />
+                    <span className="text-sm text-brand-dark/70 group-hover:text-brand-dark transition-colors">
+                      {typeof option === 'string' ? option : (option.label || option.name || String(option))} 
+                      {option.count && <span className="text-xs text-brand-dark/40"> ({option.count})</span>}
+                    </span>
+                  </>
+                ) : type === 'color' ? (
+                  <>
+                    <input 
+                      type="checkbox" 
+                      checked={isChecked}
+                      onChange={(e) => handleChange(optionValue, e.target.checked)}
+                      className="peer h-4 w-4 border-brand-dark/30 rounded-sm text-brand-primary focus:ring-brand-primary/50 transition-all"
+                    />
+                    <div 
+                      className="w-6 h-6 rounded-full border border-neutral-300"
+                      style={{ backgroundColor: option.hex || '#ccc' }}
+                      title={typeof option === 'string' ? option : (option.name || String(option))}
+                    />
+                    <span className="text-sm text-brand-dark/70 group-hover:text-brand-dark transition-colors">
+                      {typeof option === 'string' ? option : (option.name || String(option))}
+                    </span>
+                  </>
+                ) : null}
+              </label>
+            );
+          })}
         </div>
       )}
     </div>
   );
 };
 
-const FiltersSidebar = ({ isOpen, onClose }) => {
+const FiltersSidebar = ({ isOpen, onClose, filters = {}, onFilterChange }) => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  
   const [openSections, setOpenSections] = useState({
+    gender: true,
     category: true,
     price: true,
-    metal: false,
-    stone: false,
-    occasion: false
+    size: false,
+    color: false,
+    brand: false,
+    fit: false,
+    fabric: false,
+    occasion: false,
+    discount: false
   });
+
+  const [brands, setBrands] = useState([]);
+  const [colors, setColors] = useState([]);
+  const [sizes, setSizes] = useState([]);
+
+  useEffect(() => {
+    const fetchFilterData = async () => {
+      try {
+        const [brandsData, colorsData, sizesData] = await Promise.all([
+          getBrands(),
+          getColors(),
+          getSizes()
+        ]);
+        setBrands(brandsData || []);
+        setColors(colorsData || []);
+        setSizes(sizesData || []);
+      } catch (error) {
+        console.error('Error fetching filter data:', error);
+        // Fallback to dummy data
+        setBrands(['FashionHub', 'Premium', 'Classic', 'Designer']);
+        setColors([
+          { name: 'White', hex: '#FFFFFF' },
+          { name: 'Black', hex: '#000000' },
+          { name: 'Navy', hex: '#001f3f' },
+          { name: 'Red', hex: '#FF0000' },
+          { name: 'Blue', hex: '#0000FF' },
+          { name: 'Grey', hex: '#808080' },
+          { name: 'Pink', hex: '#FFC0CB' },
+        ]);
+        setSizes(['XS', 'S', 'M', 'L', 'XL', 'XXL', '30', '32', '34', '36', 'One Size']);
+      }
+    };
+    fetchFilterData();
+  }, []);
 
   const toggleSection = (section) => {
     setOpenSections(prev => ({ ...prev, [section]: !prev[section] }));
   };
 
-  const filters = {
+  const handleValueChange = (filterKey, values) => {
+    const newParams = new URLSearchParams(searchParams);
+    
+    if (values.length === 0) {
+      if (filterKey === 'price') {
+        newParams.delete('minPrice');
+        newParams.delete('maxPrice');
+      } else {
+        newParams.delete(filterKey);
+      }
+    } else if (filterKey === 'price') {
+      // Price is a range, only allow one selection
+      const range = values[values.length - 1]; // Get the last selected (most recent)
+      newParams.set('minPrice', range[0]);
+      newParams.set('maxPrice', range[1]);
+    } else if (filterKey === 'discount') {
+      // Discount only allows one selection
+      newParams.set('discountMin', values[values.length - 1]);
+    } else {
+      newParams.set(filterKey, values.join(','));
+    }
+    
+    setSearchParams(newParams);
+  };
+
+  const getSelectedValues = (filterKey) => {
+    if (filterKey === 'price') {
+      const minPrice = searchParams.get('minPrice');
+      const maxPrice = searchParams.get('maxPrice');
+      if (minPrice && maxPrice) {
+        return [[Number(minPrice), Number(maxPrice)]];
+      }
+      return [];
+    }
+    
+    if (filterKey === 'discount') {
+      const discountMin = searchParams.get('discountMin');
+      return discountMin ? [Number(discountMin)] : [];
+    }
+    
+    const param = searchParams.get(filterKey);
+    return param ? param.split(',').filter(Boolean) : [];
+  };
+
+  const clearAllFilters = () => {
+    const newParams = new URLSearchParams();
+    // Keep subcategory and sortBy if they exist
+    const subcategory = searchParams.get('subcategory');
+    const sortBy = searchParams.get('sortBy');
+    if (subcategory) newParams.set('subcategory', subcategory);
+    if (sortBy) newParams.set('sortBy', sortBy);
+    setSearchParams(newParams);
+  };
+
+  const filterOptions = {
+    gender: [
+      { id: 'men', label: 'Men', value: 'men' },
+      { id: 'women', label: 'Women', value: 'women' },
+      { id: 'kids', label: 'Kids', value: 'kids' },
+      { id: 'unisex', label: 'Unisex', value: 'unisex' },
+    ],
     category: [
-      { id: 'rings', label: 'Rings', count: 124 },
-      { id: 'necklaces', label: 'Necklaces', count: 85 },
-      { id: 'earrings', label: 'Earrings', count: 96 },
-      { id: 'bracelets', label: 'Bracelets', count: 42 },
+      { id: 't-shirt', label: 'T-Shirts', value: 't-shirt' },
+      { id: 'shirt', label: 'Shirts', value: 'shirt' },
+      { id: 'jeans', label: 'Jeans', value: 'jeans' },
+      { id: 'dress', label: 'Dresses', value: 'dress' },
+      { id: 'jacket', label: 'Jackets', value: 'jacket' },
+      { id: 'hoodie', label: 'Hoodies', value: 'hoodie' },
+      { id: 'kurti', label: 'Kurtis', value: 'kurti' },
+      { id: 'saree', label: 'Sarees', value: 'saree' },
     ],
     price: [
-      { id: 'under-100', label: 'Under $100', count: 15 },
-      { id: '100-300', label: '$100 - $300', count: 45 },
-      { id: '300-500', label: '$300 - $500', count: 32 },
-      { id: 'over-500', label: 'Over $500', count: 28 },
+      { id: 'under-500', label: 'Under ₹500', value: [0, 500] },
+      { id: '500-1000', label: '₹500 - ₹1,000', value: [500, 1000] },
+      { id: '1000-2000', label: '₹1,000 - ₹2,000', value: [1000, 2000] },
+      { id: '2000-5000', label: '₹2,000 - ₹5,000', value: [2000, 5000] },
+      { id: 'over-5000', label: 'Over ₹5,000', value: [5000, 99999] },
     ],
-    metal: [
-      { id: 'gold', label: '18k Gold', count: 64 },
-      { id: 'rose-gold', label: 'Rose Gold', count: 42 },
-      { id: 'silver', label: 'Sterling Silver', count: 38 },
-      { id: 'platinum', label: 'Platinum', count: 12 },
+    size: sizes.filter(Boolean).map(size => ({ id: String(size), label: String(size), value: String(size) })),
+    color: colors.filter(Boolean).map(color => {
+      if (typeof color === 'object' && color.hex) {
+        return color;
+      }
+      return { id: String(color), name: String(color), value: String(color), hex: '#ccc' };
+    }),
+    brand: brands.filter(Boolean).map(brand => ({ id: String(brand), label: String(brand), value: String(brand) })),
+    fit: [
+      { id: 'slim', label: 'Slim', value: 'slim' },
+      { id: 'regular', label: 'Regular', value: 'regular' },
+      { id: 'oversized', label: 'Oversized', value: 'oversized' },
+      { id: 'relaxed', label: 'Relaxed', value: 'relaxed' },
     ],
-    stone: [
-      { id: 'diamond', label: 'Diamond', count: 56 },
-      { id: 'pearl', label: 'Pearl', count: 24 },
-      { id: 'sapphire', label: 'Sapphire', count: 18 },
-      { id: 'ruby', label: 'Ruby', count: 14 },
+    fabric: [
+      { id: 'cotton', label: 'Cotton', value: 'cotton' },
+      { id: 'polyester', label: 'Polyester', value: 'polyester' },
+      { id: 'silk', label: 'Silk', value: 'silk' },
+      { id: 'denim', label: 'Denim', value: 'denim' },
+      { id: 'wool', label: 'Wool', value: 'wool' },
     ],
     occasion: [
-      { id: 'wedding', label: 'Wedding', count: 34 },
-      { id: 'party', label: 'Party', count: 48 },
-      { id: 'office', label: 'Office Wear', count: 26 },
-      { id: 'gift', label: 'Gifting', count: 52 },
+      { id: 'casual', label: 'Casual', value: 'casual' },
+      { id: 'formal', label: 'Formal', value: 'formal' },
+      { id: 'party', label: 'Party', value: 'party' },
+      { id: 'festive', label: 'Festive', value: 'festive' },
+      { id: 'office', label: 'Office', value: 'office' },
+    ],
+    discount: [
+      { id: '10', label: '10% & above', value: 10 },
+      { id: '20', label: '20% & above', value: 20 },
+      { id: '30', label: '30% & above', value: 30 },
+      { id: '50', label: '50% & above', value: 50 },
     ]
   };
 
@@ -97,7 +295,7 @@ const FiltersSidebar = ({ isOpen, onClose }) => {
       >
         <div className="p-6">
           <div className="flex justify-between items-center mb-6 lg:hidden">
-            <h3 className="text-xl font-primary font-bold">Filters</h3>
+            <h3 className="text-xl font-primary font-bold text-brand-dark">Filters</h3>
             <button onClick={onClose} className="text-brand-dark hover:text-brand-primary">
               <X size={24} />
             </button>
@@ -105,40 +303,105 @@ const FiltersSidebar = ({ isOpen, onClose }) => {
 
           <div className="space-y-2">
             <FilterSection 
+              title="Gender" 
+              options={filterOptions.gender} 
+              isOpen={openSections.gender} 
+              onToggle={() => toggleSection('gender')}
+              filterKey="gender"
+              selectedValues={getSelectedValues('gender')}
+              onValueChange={handleValueChange}
+            />
+            <FilterSection 
               title="Category" 
-              options={filters.category} 
+              options={filterOptions.category} 
               isOpen={openSections.category} 
-              onToggle={() => toggleSection('category')} 
+              onToggle={() => toggleSection('category')}
+              filterKey="category"
+              selectedValues={getSelectedValues('category')}
+              onValueChange={handleValueChange}
             />
             <FilterSection 
               title="Price" 
-              options={filters.price} 
+              options={filterOptions.price} 
               isOpen={openSections.price} 
-              onToggle={() => toggleSection('price')} 
+              onToggle={() => toggleSection('price')}
+              type="radio"
+              filterKey="price"
+              selectedValues={getSelectedValues('price')}
+              onValueChange={handleValueChange}
             />
             <FilterSection 
-              title="Metal" 
-              options={filters.metal} 
-              isOpen={openSections.metal} 
-              onToggle={() => toggleSection('metal')} 
+              title="Size" 
+              options={filterOptions.size} 
+              isOpen={openSections.size} 
+              onToggle={() => toggleSection('size')}
+              filterKey="size"
+              selectedValues={getSelectedValues('size')}
+              onValueChange={handleValueChange}
             />
             <FilterSection 
-              title="Gemstone" 
-              options={filters.stone} 
-              isOpen={openSections.stone} 
-              onToggle={() => toggleSection('stone')} 
+              title="Color" 
+              options={filterOptions.color} 
+              isOpen={openSections.color} 
+              onToggle={() => toggleSection('color')}
+              type="color"
+              filterKey="color"
+              selectedValues={getSelectedValues('color')}
+              onValueChange={handleValueChange}
+            />
+            <FilterSection 
+              title="Brand" 
+              options={filterOptions.brand} 
+              isOpen={openSections.brand} 
+              onToggle={() => toggleSection('brand')}
+              filterKey="brand"
+              selectedValues={getSelectedValues('brand')}
+              onValueChange={handleValueChange}
+            />
+            <FilterSection 
+              title="Fit" 
+              options={filterOptions.fit} 
+              isOpen={openSections.fit} 
+              onToggle={() => toggleSection('fit')}
+              filterKey="fit"
+              selectedValues={getSelectedValues('fit')}
+              onValueChange={handleValueChange}
+            />
+            <FilterSection 
+              title="Fabric" 
+              options={filterOptions.fabric} 
+              isOpen={openSections.fabric} 
+              onToggle={() => toggleSection('fabric')}
+              filterKey="fabric"
+              selectedValues={getSelectedValues('fabric')}
+              onValueChange={handleValueChange}
             />
             <FilterSection 
               title="Occasion" 
-              options={filters.occasion} 
+              options={filterOptions.occasion} 
               isOpen={openSections.occasion} 
-              onToggle={() => toggleSection('occasion')} 
+              onToggle={() => toggleSection('occasion')}
+              filterKey="occasion"
+              selectedValues={getSelectedValues('occasion')}
+              onValueChange={handleValueChange}
+            />
+            <FilterSection 
+              title="Discount" 
+              options={filterOptions.discount} 
+              isOpen={openSections.discount} 
+              onToggle={() => toggleSection('discount')}
+              type="radio"
+              filterKey="discount"
+              selectedValues={getSelectedValues('discount')}
+              onValueChange={handleValueChange}
             />
           </div>
 
           <div className="mt-8 pt-6 border-t border-neutral-200">
-            <button className="w-full btn-primary py-3 text-sm">Apply Filters</button>
-            <button className="w-full mt-3 text-sm text-brand-dark/60 hover:text-brand-primary underline decoration-1 underline-offset-4">
+            <button 
+              className="w-full mt-3 text-sm text-brand-dark/60 hover:text-brand-primary underline decoration-1 underline-offset-4"
+              onClick={clearAllFilters}
+            >
               Clear All
             </button>
           </div>

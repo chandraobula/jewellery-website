@@ -2,23 +2,28 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Trash2, Minus, Plus, ArrowRight } from 'lucide-react';
 import Button from '../components/ui/Button';
+import { formatPrice } from '../utils/price';
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([
     {
       id: 1,
-      name: 'Ethereal Diamond Ring',
-      price: 1299.00,
-      image: 'https://images.unsplash.com/photo-1603561591411-07134e71a2a9?q=80&w=2080&auto=format&fit=crop',
-      size: '6',
+      name: 'Classic White T-Shirt',
+      price: 599,
+      discountedPrice: 449,
+      image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=2080&auto=format&fit=crop',
+      size: 'M',
+      color: 'White',
       quantity: 1
     },
     {
       id: 2,
-      name: 'Pearl Drop Earrings',
-      price: 450.00,
-      image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?q=80&w=1974&auto=format&fit=crop',
-      size: null,
+      name: 'Slim Fit Jeans',
+      price: 1999,
+      discountedPrice: 1499,
+      image: 'https://images.unsplash.com/photo-1542272604-787c3835535d?q=80&w=2070&auto=format&fit=crop',
+      size: '32',
+      color: 'Blue',
       quantity: 1
     }
   ]);
@@ -37,7 +42,7 @@ const Cart = () => {
     setCartItems(items => items.filter(item => item.id !== id));
   };
 
-  const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+  const subtotal = cartItems.reduce((acc, item) => acc + ((item.discountedPrice || item.price) * item.quantity), 0);
   const shipping = 0; // Free shipping
   const total = subtotal + shipping;
 
@@ -45,7 +50,7 @@ const Cart = () => {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4">
         <h2 className="text-3xl font-primary font-bold mb-4">Your Cart is Empty</h2>
-        <p className="text-brand-dark/60 mb-8">Looks like you haven't added any treasures yet.</p>
+        <p className="text-brand-dark/60 mb-8">Looks like you haven't added any items yet.</p>
         <Link to="/new-arrivals">
           <Button variant="primary">Start Shopping</Button>
         </Link>
@@ -81,7 +86,10 @@ const Cart = () => {
                           {item.name}
                         </Link>
                       </h3>
-                      {item.size && <p className="text-sm text-brand-dark/60 mb-2">Size: {item.size}</p>}
+                      <div className="text-sm text-brand-dark/60 mb-2">
+                        {item.size && <span>Size: {item.size}</span>}
+                        {item.color && <span className={item.size ? ' ml-2' : ''}>Color: {item.color}</span>}
+                      </div>
                       <button 
                         onClick={() => removeItem(item.id)}
                         className="text-sm text-brand-error hover:text-red-700 flex items-center gap-1"
@@ -93,7 +101,16 @@ const Cart = () => {
 
                   <div className="col-span-2 text-center font-medium md:text-base">
                     <span className="md:hidden text-sm text-brand-dark/60 mr-2">Price:</span>
-                    ${item.price.toFixed(2)}
+                    <div>
+                      {item.discountedPrice ? (
+                        <>
+                          <span className="line-through text-sm text-brand-dark/50 mr-2">{formatPrice(item.price)}</span>
+                          <span>{formatPrice(item.discountedPrice)}</span>
+                        </>
+                      ) : (
+                        formatPrice(item.price)
+                      )}
+                    </div>
                   </div>
 
                   <div className="col-span-2 flex justify-center">
@@ -116,7 +133,7 @@ const Cart = () => {
 
                   <div className="col-span-2 text-right font-bold text-lg">
                     <span className="md:hidden text-sm text-brand-dark/60 font-normal mr-2">Total:</span>
-                    ${(item.price * item.quantity).toFixed(2)}
+                    {formatPrice((item.discountedPrice || item.price) * item.quantity)}
                   </div>
                 </div>
               ))}
@@ -131,17 +148,17 @@ const Cart = () => {
               <div className="space-y-4 mb-6 border-b border-neutral-200 pb-6">
                 <div className="flex justify-between">
                   <span className="text-brand-dark/70">Subtotal</span>
-                  <span className="font-medium">${subtotal.toFixed(2)}</span>
+                  <span className="font-medium">{formatPrice(subtotal)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-brand-dark/70">Shipping</span>
-                  <span className="font-medium text-brand-success">Free</span>
+                  <span className="font-medium text-green-600">Free</span>
                 </div>
               </div>
 
               <div className="flex justify-between text-lg font-bold mb-8">
                 <span>Total</span>
-                <span>${total.toFixed(2)}</span>
+                <span>{formatPrice(total)}</span>
               </div>
 
               <Button variant="primary" className="w-full mb-4 group">
