@@ -1,47 +1,55 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 
 const Hero = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const slides = [
     {
-      image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2070&auto=format&fit=crop',
-      title: 'New Collection 2025',
-      heading: 'Style for Every',
-      subheading: 'Occasion',
-      description: 'Discover our latest fashion collection designed for the modern lifestyle. From casual wear to formal attire, find your perfect style.',
-      cta: 'Shop Now',
-      link: '/new-arrivals'
+      image:
+        "https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2070&auto=format&fit=crop",
+      title: "New Collection 2025",
+      heading: "Style for Every",
+      subheading: "Occasion",
+      description:
+        "Discover our latest fashion collection designed for the modern lifestyle. From casual wear to formal attire, find your perfect style.",
+      cta: "Shop Now",
+      link: "/new-arrivals",
     },
     {
-      image: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2070&auto=format&fit=crop',
-      title: 'Winter Collection',
-      heading: 'Layer Up in',
-      subheading: 'Style',
-      description: 'Stay warm and stylish with our cozy winter collection. Premium fabrics and modern designs for every season.',
-      cta: 'Explore Collection',
-      link: '/products?season=winter'
+      image:
+        "https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2070&auto=format&fit=crop",
+      title: "Winter Collection",
+      heading: "Layer Up in",
+      subheading: "Style",
+      description:
+        "Stay warm and stylish with our cozy winter collection. Premium fabrics and modern designs for every season.",
+      cta: "Explore Collection",
+      link: "/products?season=winter",
     },
     {
-      image: 'https://images.unsplash.com/photo-1617137968427-85924c800a22?q=80&w=2070&auto=format&fit=crop',
-      title: 'Men\'s Fashion',
-      heading: 'Elevate Your',
-      subheading: 'Wardrobe',
-      description: 'Curated selection of men\'s clothing that combines comfort, quality, and contemporary style.',
-      cta: 'Shop Men',
-      link: '/men'
+      image:
+        "https://images.unsplash.com/photo-1617137968427-85924c800a22?q=80&w=2070&auto=format&fit=crop",
+      title: "Men's Fashion",
+      heading: "Elevate Your",
+      subheading: "Wardrobe",
+      description:
+        "Curated selection of men's clothing that combines comfort, quality, and contemporary style.",
+      cta: "Shop Men",
+      link: "/men",
     },
     {
-      image: 'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?q=80&w=2086&auto=format&fit=crop',
-      title: 'Women\'s Collection',
-      heading: 'Express Your',
-      subheading: 'Personality',
-      description: 'From elegant dresses to casual wear, discover pieces that reflect your unique style and confidence.',
-      cta: 'Shop Women',
-      link: '/women'
-    }
+      image:
+        "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?q=80&w=2086&auto=format&fit=crop",
+      title: "Women's Collection",
+      heading: "Express Your",
+      subheading: "Personality",
+      description:
+        "From elegant dresses to casual wear, discover pieces that reflect your unique style and confidence.",
+      cta: "Shop Women",
+      link: "/women",
+    },
   ];
 
   useEffect(() => {
@@ -71,11 +79,11 @@ const Hero = () => {
         <div
           key={index}
           className={`absolute inset-0 transition-opacity duration-1000 ${
-            index === currentSlide ? 'opacity-100' : 'opacity-0'
+            index === currentSlide ? "opacity-100" : "opacity-0"
           }`}
         >
           {/* Background Image */}
-          <div 
+          <div
             className="absolute inset-0 bg-cover bg-center bg-no-repeat"
             style={{ backgroundImage: `url("${slide.image}")` }}
           >
@@ -88,19 +96,24 @@ const Hero = () => {
               <span className="inline-block text-sm md:text-base font-accent tracking-[0.2em] uppercase mb-4 text-white font-semibold drop-shadow-lg">
                 {slide.title}
               </span>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl mb-4 md:mb-6 font-primary leading-tight drop-shadow-lg">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl mb-4 md:mb-6 font-primary leading-tight drop-shadow-lg text-white">
                 {slide.heading} <br />
-                <span className="italic font-light text-white">{slide.subheading}</span>
+                <span className="italic font-light text-white">
+                  {slide.subheading}
+                </span>
               </h1>
               <p className="text-base sm:text-lg md:text-xl mb-8 md:mb-10 text-white font-light max-w-lg leading-relaxed drop-shadow-md">
                 {slide.description}
               </p>
-              <Link 
-                to={slide.link} 
+              <Link
+                to={slide.link}
                 className="btn-primary inline-flex items-center justify-center gap-2 group shadow-lg"
               >
                 {slide.cta}
-                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                <ArrowRight
+                  size={18}
+                  className="group-hover:translate-x-1 transition-transform"
+                />
               </Link>
             </div>
           </div>
@@ -130,7 +143,9 @@ const Hero = () => {
             key={index}
             onClick={() => goToSlide(index)}
             className={`rounded-full transition-all ${
-              index === currentSlide ? 'bg-white w-8 h-2' : 'bg-white/50 hover:bg-white/75 w-2 h-2'
+              index === currentSlide
+                ? "bg-white w-8 h-2"
+                : "bg-white/50 hover:bg-white/75 w-2 h-2"
             }`}
             aria-label={`Go to slide ${index + 1}`}
           />
